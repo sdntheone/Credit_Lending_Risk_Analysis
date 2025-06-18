@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About - Credit Approval System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="max-w-4xl mx-auto px-6 py-10">
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <h1 class="text-4xl font-bold text-center text-blue-700 mb-8">About the Credit Approval System</h1>
+
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">How It Works</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    The Credit Approval System uses machine learning to predict the appropriate customer segment (P1, P2, P3, or P4)
+                    based on the applicant's financial behavior, credit history, and personal profile.
+                </p>
+            </section>
+
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">Key Features</h2>
+                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                    <li>Analyzes over 40 financial and credit-related metrics</li>
+                    <li>Provides instant segment classification (P1–P4)</li>
+                    <li>Displays confidence score for predictions</li>
+                    <li>Ensures transparency of decision factors</li>
+                    <li>Built with robust machine learning pipelines</li>
+                </ul>
+            </section>
+
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">The Model</h2>
+                <p class="text-gray-700 leading-relaxed mb-3">
+                    Trained on extensive historical data, the model evaluates trends in:
+                </p>
+                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                    <li>Payment history and delinquencies</li>
+                    <li>Active and closed trade lines</li>
+                    <li>Monthly income and employment duration</li>
+                    <li>Demographics like education and marital status</li>
+                    <li>Recent credit applications and inquiries</li>
+                </ul>
+            </section>
+
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">Data Privacy</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    All submitted data is encrypted and used only for generating predictions. We adhere to strict confidentiality
+                    protocols and do not retain any personal data after processing.
+                </p>
+            </section>
+
+            <section class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-2">Disclaimer</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    This tool is intended for demonstration and educational purposes. In real-world applications,
+                    credit decisions must follow regulatory standards and involve additional human verification.
+                </p>
+            </section>
+
+            <div class="mt-10 text-center">
+                <a href="{{ url_for('home') }}" class="inline-block bg-blue-600 text-white text-lg font-medium px-6 py-3 rounded-md hover:bg-blue-700 transition duration-200">
+                    Back to Home Page
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
