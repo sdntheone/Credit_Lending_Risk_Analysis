@@ -1,68 +1,129 @@
-# 💳 Credit Lending Risk Analysis
 
-This project aims to analyze credit lending risk using machine learning techniques. It helps financial institutions determine whether a borrower is likely to default on a loan based on historical data.
+# Credit Lending Risk Analysis
 
-## 📌 Project Objective
-
-To build a robust machine learning model that predicts the risk level of borrowers (low, medium, high), enabling informed decision-making in credit lending.
+## 📌 Project Overview
+This project performs **Credit Risk Analysis** using Machine Learning models such as Random Forest, Decision Tree, and XGBoost to predict customer creditworthiness and classify prospects into risk categories (`P1`, `P2`, `P3`, `P4`). The project also includes a **Flask-based Web Application** for interactive prediction.
 
 ---
 
-## 🚀 Features
-
-- Data cleaning and preprocessing
-- Exploratory Data Analysis (EDA)
-- Feature engineering
-- Model training and evaluation (Logistic Regression, Random Forest, XGBoost)
-- Credit risk prediction (classification)
-- Model performance metrics and visualizations
-- Deployable and scalable architecture (optional: Streamlit/FastAPI)
+## 🔍 Problem Statement
+In the banking sector, understanding a prospect's credit risk is critical. The objective is to classify loan applicants into predefined risk categories based on demographic, financial, and credit-related features using classification algorithms.
 
 ---
 
-## 🧰 Tech Stack
+## 📂 Project Structure
 
-- **Python 3.9+**
-- **Pandas, NumPy** – Data handling
-- **Matplotlib, Seaborn** – Visualization
-- **Scikit-learn** – ML models & metrics
-- **XGBoost / LightGBM** – Advanced ML
-- **Flask** – Deployment
+```
+credit_lending_risk_analysis/
+│
+├── app.py                           # Flask Web Application
+├── forms.py                         # WTForms for handling form inputs
+├── templates/                       # HTML templates (Flask)
+│   └── index.html                   # Frontend template
+├── data/                            # Raw and cleaned data files
+├── Feature Engineering.ipynb        # Feature Engineering Notebook
+├── Exploratory_data_analysis.ipynb  # EDA Notebook
+├── data_cleaning.ipynb              # Data Cleaning Notebook
+├── Model_Building.ipynb             # Model Training Notebook
+├── third_model.ipynb                # Additional model experiments
+├── model.joblib                     # Saved Machine Learning Model (Random Forest/XGBoost)
+├── best_pipeline.joblib             # Best performing pipeline/model
+├── requirements.txt                 # Required Python packages
+├── README.md                        # Project documentation
+├── LICENSE                          # License file
+└── .gitignore                       # Git ignore file
+```
 
 ---
 
-## 📊 Dataset
+## ⚙️ Technologies Used
 
-- Source: [Private Financial Institution]
-- Includes features such as:
-  - Credit score
-  - Employment status
-  - Annual income
-  - Loan amount
-  - Purpose of loan
-  - Repayment history
-
-> Note: Ensure you comply with data licensing and privacy.
+- **Python (Pandas, NumPy, Scikit-learn, XGBoost)**
+- **Flask** - Web framework for UI
+- **HTML/CSS (Jinja2 templates)** - For frontend rendering
+- **WTForms** - For form handling in Flask
+- **Jupyter Notebook** - For Data Cleaning, EDA, Feature Engineering, Model Building
+- **Joblib** - Model serialization
+- **Excel** - Raw data storage
 
 ---
 
-## 🛠️ How to Run the Project
+## 🧩 Key Features
 
-### 🔧 Installation
+1. **Data Cleaning & Preprocessing**
+   - Handled missing values (`-99999`)
+   - Chi-Square Tests for categorical variables
+   - ANOVA & VIF for numerical variables
+   - Standardization using `StandardScaler`
 
-1. Clone the repository:
+2. **Feature Engineering**
+   - Encoding categorical variables (Label Encoding, One-Hot Encoding)
+   - Removal of multicollinear features using VIF
+
+3. **Model Building**
+   - **Random Forest Classifier**
+   - **XGBoost Classifier (with Hyperparameter Tuning via GridSearchCV)**
+   - **Decision Tree Classifier**
+
+4. **Model Evaluation**
+   - Accuracy, Precision, Recall, F1 Score (per class)
+
+5. **Flask Web App**
+   - Predict customer risk category based on user input
+   - Clean, interactive UI designed with Flask & HTML
+
+---
+
+## 🚀 How to Run the Project
+
+1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/credit-risk-analysis.git
-   cd credit-risk-analysis
-2. Create a virtual environment and activate it:
+   git clone https://github.com/sdntheone/Credit_Lending_Risk_Analysis.git
+   cd Credit_Lending_Risk_Analysis
+   ```
+
+2. **Create & Activate a Virtual Environment (Optional)**:
+   ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-📈 Model Evaluation
+   source venv/bin/activate  # On Linux/Mac
+   venv\Scripts\activate     # On Windows
+   ```
 
-    Accuracy
+3. **Install the required packages**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-    Precision, Recall, F1-score
+4. **Run the Flask App**:
+   ```bash
+   python app.py
+   ```
+   Access the app at: `http://127.0.0.1:5000/`
 
-    Confusion Matrix
+---
 
-    ROC-AUC Score
+## 📊 Sample Output (XGBoost Model)
+```
+Accuracy: 0.82
+
+Class P1:
+Precision: 0.85
+Recall: 0.80
+F1 Score: 0.82
+...
+```
+
+---
+
+## ✅ Results & Conclusion
+
+- **XGBoost performed best** among all models with the highest accuracy.
+- Further model tuning or collecting more feature-rich data can improve performance.
+- The **Flask UI** enables non-technical users to interact with the model and get real-time predictions.
+
+---
+
+## 🤝 Contact
+**Sudhanshu Nandan**  
+Email: *[sdntheone.com]*  
+GitHub: [https://github.com/sdntheone](https://github.com/sdntheone)
