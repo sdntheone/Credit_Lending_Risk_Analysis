@@ -25,3 +25,14 @@ stages:
     - src/feature_engineering.py
     outs:
     - data/processed/encoded_data.csv
+  feature_selection:
+    cmd: python -m src.feature_selection
+    deps:
+    - config/config.yaml
+    - data/processed/encoded_data.csv
+    - src/feature_selection.py
+    params:
+    - feature_selection.p_value_threshold
+    - feature_selection.vif_threshold
+    outs:
+    - data/processed/selected_data.csv

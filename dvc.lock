@@ -69,3 +69,27 @@ stages:
       hash: md5
       md5: aefb325f769da32b1af4be43398d894d
       size: 12636000
+  feature_selection:
+    cmd: python -m src.feature_selection
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 2568659eb5b75c14ca0a4818cb983412
+      size: 724
+    - path: data/processed/encoded_data.csv
+      hash: md5
+      md5: aefb325f769da32b1af4be43398d894d
+      size: 12636000
+    - path: src/feature_selection.py
+      hash: md5
+      md5: 21822de653dd9c807b82f0e215f3ee60
+      size: 5249
+    params:
+      params.yaml:
+        feature_selection.p_value_threshold: 0.05
+        feature_selection.vif_threshold: 10
+    outs:
+    - path: data/processed/selected_data.csv
+      hash: md5
+      md5: 3bf20451b7f6ca29320c4d1659e79cfd
+      size: 9296899
