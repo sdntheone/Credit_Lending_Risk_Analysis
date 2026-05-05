@@ -1,0 +1,23 @@
+model:
+  random_state: 42
+  test_size: 0.2
+
+xgboost:
+  learning_rate: 0.1
+  max_depth: 5
+  n_estimators: 200
+  eval_metric: mlogloss
+
+smote:
+  p0_multiplier: 1.8
+  p1_multiplier: 1.0
+  p2_multiplier: 2.0
+  p3_multiplier: 2.5
+
+feature_selection:
+  vif_threshold: 10
+  p_value_threshold: 0.05
+
+feature_refinement:
+  correlation_threshold: 0.85
+  importance_threshold: 0.01

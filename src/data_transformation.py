@@ -1,8 +1,10 @@
 from src.data_ingestion import load_raw_data
+from src.data_ingestion import load_config,load_params
 import pandas as pd
 import numpy as np
 import os
 
+config=load_config()
 
 def clean_df1(df1):
     df1 = df1[df1['Age_Oldest_TL'] != -99999]
@@ -32,8 +34,8 @@ def clean_df2(df2):
 
 
 def treat_columns(df, columns_treated):
-    time_cols = ['time_since_recent_payment', 'time_since_recent_enq']
-    ratio_cols = ['pct_currentBal_all_TL']
+    time_cols = config['features']['time_cols']
+    ratio_cols = config['features']['ratio_cols']
 
     count_cols = [col for col in columns_treated if col not in time_cols + ratio_cols]
 
