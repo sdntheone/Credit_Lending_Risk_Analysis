@@ -1,0 +1,42 @@
+data:
+  raw_path_1: data/raw/case_study1.xlsx
+  raw_path_2: data/raw/case_study2.xlsx
+  processed_dir: data/processed
+  processed_file: merged_data.csvv
+
+model:
+  model_path: artifacts/model/model.pkl
+  random_state: 42
+  test_size: 0.2
+
+features:
+  target_column: Approved_Flag
+
+  time_cols:
+    - time_since_recent_payment
+    - time_since_recent_enq
+
+  ratio_cols:
+    - pct_currentBal_all_TL
+
+  count_cols:
+    - tot_enq
+    - CC_enq
+    - CC_enq_L6m
+    - CC_enq_L12m
+    - PL_enq
+    - PL_enq_L6m
+    - PL_enq_L12m
+    - enq_L12m
+    - enq_L6m
+    - enq_L3m
+
+  categorical_cols:
+    - EDUCATION
+    - GENDER
+    - last_prod_enq2
+    - first_prod_enq2
+    - MARITALSTATUS
+
+mlflow:
+  experiment_name: credit_risk_model
