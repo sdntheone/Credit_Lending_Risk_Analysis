@@ -1,5 +1,4 @@
-from src.data_ingestion import load_raw_data
-from src.data_ingestion import load_config, load_params
+from src.data_ingestion import load_config
 import pandas as pd
 import numpy as np
 import os
@@ -7,8 +6,6 @@ from src.utils.logger import get_logger
 from src.utils.exception import CustomException
 
 logger = get_logger(__name__)
-
-config = load_config()
 
 
 def clean_df1(df1):
@@ -53,6 +50,7 @@ def treat_columns(df, columns_treated):
     try:
         logger.info("Treating missing values")
 
+        config = load_config()
         time_cols = config['features']['time_cols']
         ratio_cols = config['features']['ratio_cols']
 
@@ -81,7 +79,15 @@ def treat_columns(df, columns_treated):
 def merge_dataframe(df1, df2):
     try:
         logger.info("Merging df1 and df2")
-        return pd.merge(df1, df2, how='inner', on='PROSPECTID')
+
+        if df1['PROSPECTID'].duplicated().any():
+            logger.warning("Duplicate PROSPECTID found in df1")
+
+        if df2['PROSPECTID'].duplicated().any():
+            logger.warning("Duplicate PROSPECTID found in df2")
+
+        df = pd.merge(df1, df2, how='inner', on='PROSPECTID')
+        return df
 
     except Exception as e:
         logger.error(f"Error in merge_dataframe: {e}")
@@ -92,8 +98,21 @@ def transformed_data():
     try:
         logger.info("Starting data transformation pipeline")
 
-        df1, df2 = load_raw_data()
-        logger.info(f"Loaded df1: {df1.shape}, df2: {df2.shape}")
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+        path_df1 = os.path.join(BASE_DIR, "data", "interim", "case_study1.csv")
+        path_df2 = os.path.join(BASE_DIR, "data", "interim", "case_study2.csv")
+
+        if not os.path.exists(path_df1):
+            raise FileNotFoundError(f"{path_df1} not found")
+
+        if not os.path.exists(path_df2):
+            raise FileNotFoundError(f"{path_df2} not found")
+
+        df1 = pd.read_csv(path_df1)
+        df2 = pd.read_csv(path_df2)
+
+        logger.info(f"df1 shape: {df1.shape}, df2 shape: {df2.shape}")
 
         df1 = clean_df1(df1)
         df2, columns_treated = clean_df2(df2)
@@ -102,12 +121,10 @@ def transformed_data():
         df = merge_dataframe(df1, df2)
         logger.info(f"Merged data shape: {df.shape}")
 
-        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         save_path = os.path.join(BASE_DIR, "data", "processed", "merged_data.csv")
-
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        df.to_csv(save_path, index=False)
 
+        df.to_csv(save_path, index=False)
         logger.info(f"Data saved at: {save_path}")
 
         return df

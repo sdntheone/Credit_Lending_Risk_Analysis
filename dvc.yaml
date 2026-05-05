@@ -2,17 +2,26 @@ stages:
   data_ingestion:
     cmd: python -m src.data_ingestion
     deps:
+    - config/config.yaml
     - data/raw
     - src/data_ingestion.py
     outs:
     - data/interim/case_study1.csv
     - data/interim/case_study2.csv
-    
   data_transformation:
     cmd: python -m src.data_transformation
     deps:
+    - config/config.yaml
     - data/interim/case_study1.csv
     - data/interim/case_study2.csv
     - src/data_transformation.py
     outs:
     - data/processed/merged_data.csv
+  feature_engineering:
+    cmd: python -m src.feature_engineering
+    deps:
+    - config/config.yaml
+    - data/processed/merged_data.csv
+    - src/feature_engineering.py
+    outs:
+    - data/processed/encoded_data.csv
