@@ -1,0 +1,9 @@
+stages:
+  data_ingestion:
+    cmd: python -m src.data_ingestion
+    deps:
+    - data/raw
+    - src/data_ingestion.py
+    outs:
+    - data/interim/case_study1.csv
+    - data/interim/case_study2.csv

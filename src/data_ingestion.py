@@ -71,6 +71,20 @@ def load_raw_data():
     df1, df2 = load_data(raw_path_1, raw_path_2)
     logger.info("Raw data loaded successfully")
 
+    save_path_1 = os.path.join(BASE_DIR, "data", "interim", "case_study1.csv")
+    save_path_2 = os.path.join(BASE_DIR, "data", "interim", "case_study2.csv")
+
+    os.makedirs(os.path.dirname(save_path_1), exist_ok=True)
+
+    df1.to_csv(save_path_1, index=False)
+    logger.info("Saved case_study1.csv to data/interim")
+
+    df2.to_csv(save_path_2, index=False)
+    logger.info("Saved case_study2.csv to data/interim")
+
+    logger.info(f"Shape df1: {df1.shape}")
+    logger.info(f"Shape df2: {df2.shape}")
+
     return df1, df2
 
 

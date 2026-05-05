@@ -1,0 +1,23 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python -m src.data_ingestion
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: f637eb82ca5e56edfb0ba6b6fbfb65cb.dir
+      size: 18650981
+      nfiles: 2
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: df734c911c8367f127dc87c1f0d57c5f
+      size: 2902
+    outs:
+    - path: data/interim/case_study1.csv
+      hash: md5
+      md5: 2aa72576b59d83c24d24880db3f9e603
+      size: 3763288
+    - path: data/interim/case_study2.csv
+      hash: md5
+      md5: e4f7337f6a5a05db8d7bcd1ed9f8a0cf
+      size: 11330925
