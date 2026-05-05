@@ -21,3 +21,23 @@ stages:
       hash: md5
       md5: e4f7337f6a5a05db8d7bcd1ed9f8a0cf
       size: 11330925
+  data_transformation:
+    cmd: python -m src.data_transformation
+    deps:
+    - path: data/interim/case_study1.csv
+      hash: md5
+      md5: 2aa72576b59d83c24d24880db3f9e603
+      size: 3763288
+    - path: data/interim/case_study2.csv
+      hash: md5
+      md5: e4f7337f6a5a05db8d7bcd1ed9f8a0cf
+      size: 11330925
+    - path: src/data_transformation.py
+      hash: md5
+      md5: e62bb9875e6081cc7fcb19d803bd22c5
+      size: 3456
+    outs:
+    - path: data/processed/merged_data.csv
+      hash: md5
+      md5: 9306309848e608c858fb4eec2e8314ae
+      size: 13357376

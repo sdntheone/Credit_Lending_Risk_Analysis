@@ -2,7 +2,7 @@ data:
   raw_path_1: data/raw/case_study1.xlsx
   raw_path_2: data/raw/case_study2.xlsx
   processed_dir: data/processed
-  processed_file: merged_data.csvv
+  processed_file: merged_data.csv
 
 model:
   model_path: artifacts/model/model.pkl

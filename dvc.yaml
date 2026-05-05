@@ -7,3 +7,12 @@ stages:
     outs:
     - data/interim/case_study1.csv
     - data/interim/case_study2.csv
+    
+  data_transformation:
+    cmd: python -m src.data_transformation
+    deps:
+    - data/interim/case_study1.csv
+    - data/interim/case_study2.csv
+    - src/data_transformation.py
+    outs:
+    - data/processed/merged_data.csv
