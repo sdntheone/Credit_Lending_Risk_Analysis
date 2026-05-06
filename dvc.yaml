@@ -36,3 +36,14 @@ stages:
     - feature_selection.vif_threshold
     outs:
     - data/processed/selected_data.csv
+  feature_refinement:
+    cmd: python -m src.feature_refinement
+    deps:
+    - config/config.yaml
+    - data/processed/selected_data.csv
+    - src/feature_refinement.py
+    params:
+    - feature_refinement.correlation_threshold
+    - feature_refinement.importance_threshold
+    outs:
+    - data/processed/final_data.csv

@@ -3,120 +3,136 @@ import numpy as np
 import os
 
 from xgboost import XGBClassifier
-from src.data_ingestion import load_config
+from src.data_ingestion import load_config,load_params
+from src.utils.logger import get_logger
+from src.utils.exception import CustomException
+
+logger = get_logger(__name__)
 
 
-# -------------------------------
-# 1. Load Selected Data
-# -------------------------------
-def load_selected_data():
-    base_dir = os.getcwd()
-    path = os.path.join(base_dir, "data", "processed", "selected_data.csv")
+def model_feature_selection(X, y, imp_threshold):
+    try:
+        if X.empty:
+            raise ValueError("Input features are empty")
 
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"File not found: {path}")
+        model = XGBClassifier(eval_metric="mlogloss")
+        model.fit(X, y)
 
-    df = pd.read_csv(path)
-    print("Loaded selected data:", df.shape)
+        importance = model.feature_importances_
 
-    return df
+        feature_importance_df = pd.DataFrame({
+            "feature": X.columns,
+            "importance": importance
+        }).sort_values(by="importance", ascending=False)
 
+        selected_features = feature_importance_df[
+            feature_importance_df["importance"] > imp_threshold
+        ]["feature"].tolist()
 
-# -------------------------------
-# 2. Model-Based Feature Selection
-# -------------------------------
-def model_feature_selection(X, y, threshold=0.01):
-    model = XGBClassifier(eval_metric="mlogloss")
-    model.fit(X, y)
+        if not selected_features:
+            logger.warning("No features selected, using top features")
+            selected_features = feature_importance_df.head(20)["feature"].tolist()
 
-    importance = model.feature_importances_
+        return selected_features
 
-    feature_importance_df = pd.DataFrame({
-        "feature": X.columns,
-        "importance": importance
-    }).sort_values(by="importance", ascending=False)
-
-    print("\nFeature Importance:\n", feature_importance_df)
-
-    selected_features = feature_importance_df[
-        feature_importance_df["importance"] > threshold
-    ]["feature"].tolist()
-
-    # safety check
-    if len(selected_features) == 0:
-        print("Warning: No features selected, lowering threshold")
-        selected_features = feature_importance_df.head(20)["feature"].tolist()
-
-    return selected_features
+    except Exception as e:
+        logger.error(f"Error in model_feature_selection: {e}")
+        raise CustomException(e)
 
 
-# -------------------------------
-# 3. Correlation Filtering
-# -------------------------------
-def correlation_filter(X, threshold=0.85):
-    X_numeric = X.select_dtypes(include=[np.number])
+def correlation_filter(X, corr_threshold):
+    try:
+        if X.empty:
+            raise ValueError("Feature set is empty before correlation filtering")
 
-    corr_matrix = X_numeric.corr().abs()
+        X_numeric = X.select_dtypes(include=[np.number])
 
-    upper = corr_matrix.where(
-        np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
-    )
+        if X_numeric.shape[1] == 0:
+            return X
 
-    to_drop = [col for col in upper.columns if any(upper[col] > threshold)]
+        corr_matrix = X_numeric.corr().abs()
 
-    print("\nDropping highly correlated features:", to_drop)
+        upper = corr_matrix.where(
+            np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
+        )
 
-    return X.drop(columns=to_drop, errors="ignore")
+        to_drop = [col for col in upper.columns if any(upper[col] > corr_threshold)]
+
+        if to_drop:
+            logger.info(f"Dropping correlated features: {to_drop}")
+
+        return X.drop(columns=to_drop, errors="ignore")
+
+    except Exception as e:
+        logger.error(f"Error in correlation_filter: {e}")
+        raise CustomException(e)
 
 
-# -------------------------------
-# 4. Main Pipeline
-# -------------------------------
 def feature_refinement_pipeline():
-    config = load_config()
-    target_col = config["features"]["target_column"]
-
-    # Step 1: Load data
-    df = load_selected_data()
-
-    # Step 2: Remove ID columns (IMPORTANT)
-    df = df.drop(columns=["PROSPECTID"], errors="ignore")
-
-    # Step 3: Split
-    if target_col not in df.columns:
-        raise ValueError(f"{target_col} not found in dataset")
-
-    X = df.drop(columns=[target_col])
-    y = df[target_col]
-
-    # Step 4: Correlation filtering
-    X = correlation_filter(X, threshold=0.85)
-
-    # Step 5: Model-based selection
-    selected_features = model_feature_selection(X, y, threshold=0.01)
-
-    print("\nFinal Selected Features:", selected_features)
-
-    # Step 6: Final dataset
-    df_final = X[selected_features].copy()
-    df_final[target_col] = y
-
-    print("\nFinal shape after refinement:", df_final.shape)
-
-    # Step 7: Save
-    base_dir = os.getcwd()
-    save_path = os.path.join(base_dir, "data", "processed", "final_data.csv")
-
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    df_final.to_csv(save_path, index=False)
-
-    print("Final data saved at:", save_path)
-
-    return df_final, selected_features
+    try:
+        config = load_config()
+        params=load_params()
+        imp_threshold=params['feature_refinement']['importance_threshold']
+        corr_threshold=params['feature_refinement']['correlation_threshold']
 
 
-# -------------------------------
-# Run
-# -------------------------------
+        target_col = config["features"]["target_column"]
+
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        data_path = os.path.join(BASE_DIR, "data", "processed", "selected_data.csv")
+
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"{data_path} not found")
+
+        df = pd.read_csv(data_path)
+
+        if df.empty:
+            raise ValueError("Loaded dataframe is empty")
+
+        df = df.drop(columns=["PROSPECTID"], errors="ignore")
+
+        if target_col not in df.columns:
+            raise ValueError(f"{target_col} not found in dataset")
+
+        X = df.drop(columns=[target_col])
+        y = df[target_col]
+
+        if X.empty:
+            raise ValueError("No features available after split")
+
+        X = correlation_filter(X, corr_threshold)
+
+        if X.shape[1] == 0:
+            raise ValueError("All features removed after correlation filtering")
+
+        selected_features = model_feature_selection(X, y, imp_threshold)
+
+        if not selected_features:
+            raise ValueError("No features selected")
+
+        df_final = X[selected_features].copy()
+        df_final[target_col] = y
+
+        if df_final.empty:
+            raise ValueError("Final dataset is empty")
+
+        save_path = os.path.join(BASE_DIR, "data", "processed", "final_data.csv")
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+        df_final.to_csv(save_path, index=False)
+        logger.info(f"Final data saved at: {save_path}")
+
+        return df_final, selected_features
+
+    except Exception as e:
+        logger.error(f"Error in feature_refinement_pipeline: {e}")
+        raise CustomException(e)
+
+
 if __name__ == "__main__":
-    df_final, features = feature_refinement_pipeline()
+    try:
+        df_final, features = feature_refinement_pipeline()
+        logger.info(f"Pipeline completed. Features: {features}")
+    except Exception as e:
+        logger.error(f"Execution failed: {e}")
+        raise

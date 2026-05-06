@@ -51,20 +51,15 @@ def encoded_data():
         categorical_cols = config["features"]["categorical_cols"]
 
         data_path = os.path.join(BASE_DIR, "data", "processed", "merged_data.csv")
-
         df = pd.read_csv(data_path)
         logger.info(f"Loaded merged data: {df.shape}")
 
         df, categorical_cols = encode_categorical(df, categorical_cols)
-
         df = encode_target(df, target_col)
-
         cat_indices = [df.columns.get_loc(col) for col in categorical_cols]
-
         logger.info("Encoding completed")
 
         save_path = os.path.join(BASE_DIR, "data", "processed", "encoded_data.csv")
-
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         df.to_csv(save_path,index=False)
         logger.info(f"Encoded data saved at: {save_path}")
