@@ -4,70 +4,95 @@ import joblib
 
 from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
 from src.data_ingestion import load_config
+from src.utils.logger import get_logger
+from src.utils.exception import CustomException
+
+logger = get_logger(__name__)
 
 
-# -------------------------------
-# 1. Load Model
-# -------------------------------
 def load_model():
-    path = os.path.join(os.getcwd(), "artifacts", "model", "model.pkl")
+    try:
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        path = os.path.join(BASE_DIR, "artifacts", "model", "model.pkl")
 
-    if not os.path.exists(path):
-        raise FileNotFoundError("Model not found")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} not found")
 
-    return joblib.load(path)
+        return joblib.load(path)
+
+    except Exception as e:
+        logger.error(f"Error in load_model: {e}")
+        raise CustomException(e)
 
 
-# -------------------------------
-# 2. Load Data
-# -------------------------------
 def load_data():
-    config = load_config()
-    target_col = config["features"]["target_column"]
+    try:
+        config = load_config()
+        target_col = config["features"]["target_column"]
 
-    path = os.path.join(os.getcwd(), "data", "processed", "final_data.csv")
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        path = os.path.join(BASE_DIR, "data", "processed", "final_data.csv")
 
-    df = pd.read_csv(path)
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} not found")
 
-    X = df.drop(columns=[target_col])
-    y = df[target_col]
+        df = pd.read_csv(path)
 
-    return X, y
+        if df.empty:
+            raise ValueError("Loaded dataframe is empty")
+
+        if target_col not in df.columns:
+            raise ValueError(f"{target_col} not found in dataset")
+
+        X = df.drop(columns=[target_col])
+        y = df[target_col]
+
+        return X, y
+
+    except Exception as e:
+        logger.error(f"Error in load_data: {e}")
+        raise CustomException(e)
 
 
-# -------------------------------
-# 3. Evaluate
-# -------------------------------
 def evaluate(model, X, y):
-    y_pred = model.predict(X)
+    try:
+        if X.empty:
+            raise ValueError("Evaluation data is empty")
 
-    accuracy = accuracy_score(y, y_pred)
-    f1_weighted = f1_score(y, y_pred, average='weighted')
-    f1_macro = f1_score(y, y_pred, average='macro')
+        y_pred = model.predict(X)
 
-    precision, recall, f1_vals, _ = precision_recall_fscore_support(y, y_pred)
+        accuracy = accuracy_score(y, y_pred)
+        f1_weighted = f1_score(y, y_pred, average='weighted')
+        f1_macro = f1_score(y, y_pred, average='macro')
 
-    # 🔥 Mapping
-    class_names = ["P1", "P2", "P3", "P4"]
+        precision, recall, f1_vals, _ = precision_recall_fscore_support(y, y_pred)
 
-    print("\n===== FINAL MODEL EVALUATION =====")
-    print("Accuracy:", accuracy)
-    print("F1 Weighted:", f1_weighted)
-    print("F1 Macro:", f1_macro)
+        class_names = ["P1", "P2", "P3", "P4"]
 
-    for i in range(len(f1_vals)):
-        print(f"\nClass {class_names[i]}:")
-        print("Precision:", precision[i])
-        print("Recall:", recall[i])
-        print("F1:", f1_vals[i])
-# -------------------------------
-# 4. Main
-# -------------------------------
+        logger.info(f"Accuracy: {accuracy}")
+        logger.info(f"F1 Weighted: {f1_weighted}")
+        logger.info(f"F1 Macro: {f1_macro}")
+
+        for i in range(len(f1_vals)):
+            logger.info(
+                f"{class_names[i]} -> Precision: {precision[i]}, Recall: {recall[i]}, F1: {f1_vals[i]}"
+            )
+
+    except Exception as e:
+        logger.error(f"Error in evaluate: {e}")
+        raise CustomException(e)
+
+
 def main():
-    model = load_model()
-    X, y = load_data()
+    try:
+        model = load_model()
+        X, y = load_data()
+        evaluate(model, X, y)
+        logger.info("Evaluation completed")
 
-    evaluate(model, X, y)
+    except Exception as e:
+        logger.error(f"Error in evaluation pipeline: {e}")
+        raise CustomException(e)
 
 
 if __name__ == "__main__":

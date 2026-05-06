@@ -66,3 +66,10 @@ stages:
     - xgboost.n_estimators
     outs:
     - artifacts/model/model.pkl
+  model_evaluation:
+    cmd: python -m src.model_evaluation
+    deps:
+    - artifacts/model/model.pkl
+    - config/config.yaml
+    - data/processed/final_data.csv
+    - src/model_evaluation.py
