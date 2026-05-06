@@ -196,3 +196,4 @@ credit_mlops_env/
 data/*
 !data/*.dvc
 !data/.gitignore
+artifacts/

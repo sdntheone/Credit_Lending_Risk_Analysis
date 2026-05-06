@@ -47,3 +47,22 @@ stages:
     - feature_refinement.importance_threshold
     outs:
     - data/processed/final_data.csv
+  model_trainer:
+    cmd: python -m src.model_trainer
+    deps:
+    - config/config.yaml
+    - data/processed/final_data.csv
+    - src/model_trainer.py
+    params:
+    - model.random_state
+    - model.test_size
+    - smote.p0_multiplier
+    - smote.p1_multiplier
+    - smote.p2_multiplier
+    - smote.p3_multiplier
+    - xgboost.eval_metric
+    - xgboost.learning_rate
+    - xgboost.max_depth
+    - xgboost.n_estimators
+    outs:
+    - artifacts/model/model.pkl
