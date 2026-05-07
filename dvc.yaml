@@ -52,6 +52,7 @@ stages:
     deps:
     - config/config.yaml
     - data/processed/final_data.csv
+    - src/model_evaluation.py
     - src/model_trainer.py
     params:
     - model.random_state
@@ -66,10 +67,5 @@ stages:
     - xgboost.n_estimators
     outs:
     - artifacts/model/model.pkl
-  model_evaluation:
-    cmd: python -m src.model_evaluation
-    deps:
-    - artifacts/model/model.pkl
-    - config/config.yaml
-    - data/processed/final_data.csv
-    - src/model_evaluation.py
+    - reports/metrics.json
+    - reports/model_info.json

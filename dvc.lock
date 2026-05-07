@@ -128,10 +128,14 @@ stages:
       hash: md5
       md5: a903998bcf226760466fa48a0c577205
       size: 2908496
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 1dfe93fe2be7d27a9c40022a2291973a
+      size: 1429
     - path: src/model_trainer.py
       hash: md5
-      md5: 31fdd082e1761eb930e1abc255e35314
-      size: 4400
+      md5: bd26c871f5e496259a2adfe0a88b331e
+      size: 7553
     params:
       params.yaml:
         model.random_state: 42
@@ -149,6 +153,14 @@ stages:
       hash: md5
       md5: 7d8d6b41114627e950a804abd8f6338d
       size: 1983034
+    - path: reports/metrics.json
+      hash: md5
+      md5: a37d35affaa215efa64ea7b9ed8a2590
+      size: 628
+    - path: reports/model_info.json
+      hash: md5
+      md5: 9ad13533b1e9cf738d3c3f333bffe728
+      size: 158
   model_evaluation:
     cmd: python -m src.model_evaluation
     deps:

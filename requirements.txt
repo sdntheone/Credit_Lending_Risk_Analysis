@@ -9,4 +9,5 @@ pydantic
 openpyxl
 statsmodels
 imblearn
-catboost
+xgboost
+dagshub
