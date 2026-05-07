@@ -193,25 +193,24 @@ def main():
         test_size = params["model"]["test_size"]
         random_state = params["model"]["random_state"]
 
-        xgb_params = params["xgboost"]
         smote_params = params["smote"]
 
-        X_train, X_test, y_train, y_test = split_data(
-            df,
-            target_col,
-            test_size,
-            random_state
-        )
+        X_train, X_test, y_train, y_test = split_data(df, target_col, test_size, random_state)
 
-        X_train, y_train = apply_smote(
-            X_train,
-            y_train,
-            smote_params
-        )
+        X_train, y_train = apply_smote(X_train, y_train, smote_params)
 
-        mlflow.set_experiment("Credit Lending Experiment")
+        learning_rates = [0.05, 0.1]
+        max_depths = [3, 5]
+        n_estimators_list = [200, 300]
 
-        with mlflow.start_run(run_name="credit_risk_xgboost") as run:
+        best_model = None
+        best_metrics = None
+        best_f1 = 0
+        best_run_id = None
+
+        mlflow.set_experiment("Credit Lending Experiment v2")
+
+        with mlflow.start_run(run_name="credit_risk_xgboost") as parent_run:
 
             mlflow.set_tags({
                 "project": "Credit Lending Risk Analysis",
@@ -226,60 +225,103 @@ def main():
                 "random_state": random_state
             })
 
-            mlflow.log_params(xgb_params)
             mlflow.log_params(smote_params)
 
-            model = train_model(X_train, y_train, xgb_params)
-            metrics = evaluate(model, X_test, y_test)
-            metrics_path=os.path.join(BASE_DIR,"reports","metrics.json")
-            os.makedirs(os.path.dirname(metrics_path),exist_ok=True)
+            run_number = 1
 
-            with open(metrics_path,'w') as f:
-                json.dump(metrics,f,indent=4)
+            for lr in learning_rates:
 
-            mlflow.log_metrics(metrics)
+                for depth in max_depths:
 
-            signature = infer_signature(
-                X_train,
-                model.predict(X_train)
-            )
+                    for n_est in n_estimators_list:
 
-            temp_model_dir = os.path.join(BASE_DIR,"temp_mlflow_model")
+                        xgb_params = {
+                            "learning_rate": lr,
+                            "max_depth": depth,
+                            "n_estimators": n_est,
+                            "eval_metric": params["xgboost"]["eval_metric"]
+                        }
 
-            if os.path.exists(temp_model_dir):
-                shutil.rmtree(temp_model_dir)
+                        with mlflow.start_run(run_name=f"xgboost_run_{run_number}", nested=True) as child_run:
 
-            mlflow.xgboost.save_model(
-                xgb_model=model,
-                path=temp_model_dir,
-                signature=signature
-            )
+                            logger.info(f"Running Experiment {run_number}")
 
-            mlflow.xgboost.log_model(
-                xgb_model=model,
-                artifact_path="model",
-                signature=signature
-            )
+                            mlflow.log_params(xgb_params)
 
-            mlflow.log_artifacts(
-                temp_model_dir,
-                artifact_path="model"
-            )
-            save_model(model)
+                            model = train_model(X_train, y_train, xgb_params)
 
-            model_uri = f"runs:/{run.info.run_id}/model"
+                            metrics = evaluate(model, X_test, y_test)
 
-            save_model_info(
-                run_id=run.info.run_id,
-                model_uri=model_uri
-            )
+                            mlflow.log_metrics(metrics)
+
+                            signature = infer_signature(
+                                X_train,
+                                model.predict(X_train)
+                            )
+
+                            temp_model_dir = os.path.join(BASE_DIR, "temp_mlflow_model")
+
+                            if os.path.exists(temp_model_dir):
+                                shutil.rmtree(temp_model_dir)
+
+                            mlflow.xgboost.save_model(
+                                xgb_model=model,
+                                path=temp_model_dir,
+                                signature=signature
+                            )
+
+                            mlflow.xgboost.log_model(
+                                xgb_model=model,
+                                artifact_path="model",
+                                signature=signature
+                            )
+
+                            mlflow.log_artifacts(
+                                temp_model_dir,
+                                artifact_path="model"
+                            )
+
+                            shutil.rmtree(temp_model_dir)
+
+                            current_f1 = metrics["f1_weighted"]
+
+                            logger.info(f"Run {run_number} F1 Weighted: {current_f1}")
+
+                            if current_f1 > best_f1:
+
+                                best_f1 = current_f1
+                                best_model = model
+                                best_metrics = metrics
+                                best_run_id = child_run.info.run_id
+
+                                logger.info(f"New Best Model Found -> F1: {best_f1}")
+
+                            run_number += 1
+
+            metrics_path = os.path.join(BASE_DIR, "reports", "metrics.json")
+
+            os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+
+            with open(metrics_path, "w") as f:
+                json.dump(best_metrics, f, indent=4)
+
+            save_model(best_model)
+
+            model_uri = f"runs:/{best_run_id}/model"
+
+            save_model_info(run_id=best_run_id, model_uri=model_uri)
+
+            logger.info(f"Best Run ID: {best_run_id}")
+
+            logger.info(f"Best F1 Weighted: {best_f1}")
 
             logger.info("Training pipeline completed")
 
     except Exception as e:
-        logger.error(f"Error in main pipeline: {e}")
-        raise CustomException(e)
 
+        logger.error(f"Error in main pipeline: {e}")
+
+        raise CustomException(e)
 
 if __name__ == "__main__":
     main()

@@ -180,3 +180,43 @@ stages:
       hash: md5
       md5: a6ec970f9930f5e5a1144c49ae2a6450
       size: 2799
+  model_training:
+    cmd: python -m src.model_trainer
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 2568659eb5b75c14ca0a4818cb983412
+      size: 724
+    - path: data/processed/final_data.csv
+      hash: md5
+      md5: a903998bcf226760466fa48a0c577205
+      size: 2908496
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: e2547cd0b50159225da7ae049beb20f9
+      size: 1702
+    - path: src/model_trainer.py
+      hash: md5
+      md5: 09a56352836a6c09c37c38181d6c0910
+      size: 9420
+    params:
+      params.yaml:
+        model.random_state: 42
+        model.test_size: 0.2
+        smote.p0_multiplier: 1.8
+        smote.p1_multiplier: 1.0
+        smote.p2_multiplier: 2.0
+        smote.p3_multiplier: 2.5
+    outs:
+    - path: artifacts/model/model.pkl
+      hash: md5
+      md5: ad86ca98ffeefc8dec9600cd1babba08
+      size: 2909477
+    - path: reports/metrics.json
+      hash: md5
+      md5: 1361bab5a0370412bcd5e379e2bc91c9
+      size: 569
+    - path: reports/model_info.json
+      hash: md5
+      md5: 854e2b1fed1af3d0f4afb1f90a7cd278
+      size: 158
