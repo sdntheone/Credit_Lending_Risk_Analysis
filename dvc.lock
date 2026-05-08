@@ -62,8 +62,8 @@ stages:
       size: 13357376
     - path: src/feature_engineering.py
       hash: md5
-      md5: 1386934530509bbba229c1230d195378
-      size: 2569
+      md5: e16e6bb65899ca51eed8f6f86adad551
+      size: 2937
     outs:
     - path: data/processed/encoded_data.csv
       hash: md5

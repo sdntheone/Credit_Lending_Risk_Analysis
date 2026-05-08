@@ -5,9 +5,9 @@ from src.utils.logger import get_logger
 from src.utils.exception import CustomException
 import os
 import pandas as pd
+import joblib
 
 logger = get_logger(__name__)
-
 
 
 def encode_categorical(df, categorical_cols):
@@ -33,6 +33,16 @@ def encode_target(df, target_col):
         lb = LabelEncoder()
         df[target_col] = lb.fit_transform(df[target_col])
 
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+        encoder_path = os.path.join(BASE_DIR, "artifacts", "label_encoder.pkl")
+
+        os.makedirs(os.path.dirname(encoder_path), exist_ok=True)
+
+        joblib.dump(lb, encoder_path)
+
+        logger.info(f"Label encoder saved at: {encoder_path}")
+
         return df
 
     except Exception as e:
@@ -57,11 +67,15 @@ def encoded_data():
         df, categorical_cols = encode_categorical(df, categorical_cols)
         df = encode_target(df, target_col)
         cat_indices = [df.columns.get_loc(col) for col in categorical_cols]
+
         logger.info("Encoding completed")
 
         save_path = os.path.join(BASE_DIR, "data", "processed", "encoded_data.csv")
+
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        df.to_csv(save_path,index=False)
+
+        df.to_csv(save_path, index=False)
+
         logger.info(f"Encoded data saved at: {save_path}")
 
         return df, cat_indices
@@ -76,6 +90,7 @@ if __name__ == "__main__":
         df, cat_indices = encoded_data()
         logger.info(f"Final data shape: {df.shape}")
         logger.info(f"Categorical indices: {cat_indices}")
+
     except Exception as e:
         logger.error(f"Execution failed: {e}")
         raise
