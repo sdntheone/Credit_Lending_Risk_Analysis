@@ -12,3 +12,4 @@ imblearn
 xgboost
 dagshub
 fastapi
+streamlit
