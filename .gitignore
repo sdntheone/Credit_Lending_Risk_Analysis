@@ -197,3 +197,4 @@ data/*
 !data/*.dvc
 !data/.gitignore
 artifacts/
+.env

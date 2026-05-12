@@ -4,15 +4,21 @@ import dagshub
 import joblib
 import os
 
+username = os.getenv("DAGSHUB_USERNAME")
+token = os.getenv("DAGSHUB_TOKEN")
+
+os.environ["MLFLOW_TRACKING_USERNAME"] = username
+os.environ["MLFLOW_TRACKING_PASSWORD"] = token
+
 mlflow.set_tracking_uri(
     "https://dagshub.com/sdntheone/Credit_Lending_Risk_Analysis.mlflow"
 )
 
-dagshub.init(
-    repo_owner="sdntheone",
-    repo_name="Credit_Lending_Risk_Analysis",
-    mlflow=True
-)
+# dagshub.init(
+#     repo_owner="sdntheone",
+#     repo_name="Credit_Lending_Risk_Analysis",
+#     mlflow=True
+# )
 
 MODEL_URI = "models:/CreditRiskModel@champion"
 
