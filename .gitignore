@@ -198,3 +198,13 @@ data/*
 !data/.gitignore
 artifacts/
 .env
+
+__pycache__/
+*.pyc
+venv/
+myenv/
+credit_mlops_env/
+artifacts/
+data/
+.mlflow/
+.dvc/cache/
