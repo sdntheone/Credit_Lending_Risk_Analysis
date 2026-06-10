@@ -7,7 +7,7 @@ Credit Lending Risk Analysis is an end-to-end MLOps project designed to predict 
 ---
 
 ### Application Dashboard
-![Credit Risk Dashboard](assets/dashboard.png)
+![Credit Risk Dashboard](assets/Credit-Risk-Prediction.png)
 
 ---
 
