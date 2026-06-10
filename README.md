@@ -1,129 +1,247 @@
-
 # Credit Lending Risk Analysis
 
 ## 📌 Project Overview
-This project performs **Credit Risk Analysis** using Machine Learning models such as Random Forest, Decision Tree, and XGBoost to predict customer creditworthiness and classify prospects into risk categories (`P1`, `P2`, `P3`, `P4`). The project also includes a **Flask-based Web Application** for interactive prediction.
+
+Credit Lending Risk Analysis is an end-to-end MLOps project designed to predict customer creditworthiness and classify applicants into four risk categories (`P1`, `P2`, `P3`, `P4`). The project combines machine learning, experiment tracking, model versioning, containerization, CI/CD, and cloud deployment to deliver a production-ready credit risk assessment system.
 
 ---
 
-## 🔍 Problem Statement
-In the banking sector, understanding a prospect's credit risk is critical. The objective is to classify loan applicants into predefined risk categories based on demographic, financial, and credit-related features using classification algorithms.
+### Application Dashboard
+![Credit Risk Dashboard](assets/dashboard.png)
+
+---
+
+## 🎯 Business Problem
+
+Financial institutions must accurately assess the credit risk of loan applicants to reduce defaults and optimize lending decisions. This project leverages machine learning models and MLOps practices to automate risk classification and provide real-time predictions through a web interface.
+
+---
+
+## 🏗️ Project Architecture
+
+```text
+Data Ingestion
+      ↓
+Data Validation
+      ↓
+Data Transformation
+      ↓
+Feature Engineering
+      ↓
+Model Training
+      ↓
+Model Evaluation
+      ↓
+MLflow Model Registry
+      ↓
+FastAPI Inference Service
+      ↓
+Streamlit Frontend
+      ↓
+Docker & Docker Compose
+      ↓
+GitHub Actions CI/CD
+      ↓
+AWS EC2 Deployment
+```
 
 ---
 
 ## 📂 Project Structure
 
-```
-credit_lending_risk_analysis/
+```text
+Credit_Lending_Risk_Analysis/
+
+├── app/                        # FastAPI application
+├── src/                        # MLOps pipeline components
+│   ├── data_ingestion.py
+│   ├── data_validation.py
+│   ├── data_transformation.py
+│   ├── feature_engineering.py
+│   ├── model_trainer.py
+│   ├── model_evaluation.py
+│   └── model_registry.py
 │
-├── app.py                           # Flask Web Application
-├── forms.py                         # WTForms for handling form inputs
-├── templates/                       # HTML templates (Flask)
-│   └── index.html                   # Frontend template
-├── data/                            # Raw and cleaned data files
-├── Feature Engineering.ipynb        # Feature Engineering Notebook
-├── Exploratory_data_analysis.ipynb  # EDA Notebook
-├── data_cleaning.ipynb              # Data Cleaning Notebook
-├── Model_Building.ipynb             # Model Training Notebook
-├── third_model.ipynb                # Additional model experiments
-├── model.joblib                     # Saved Machine Learning Model (Random Forest/XGBoost)
-├── best_pipeline.joblib             # Best performing pipeline/model
-├── requirements.txt                 # Required Python packages
-├── README.md                        # Project documentation
-├── LICENSE                          # License file
-└── .gitignore                       # Git ignore file
+├── config/                     # Configuration files
+├── data/                       # Raw and processed datasets
+├── notebooks/                  # EDA and experimentation notebooks
+├── reports/                    # Evaluation reports
+├── tests/                      # Unit tests
+├── streamlit_app.py            # Streamlit frontend
+├── dvc.yaml                    # DVC pipeline
+├── params.yaml                 # Pipeline parameters
+├── Dockerfile.fastapi          # Backend container
+├── Dockerfile.streamlit        # Frontend container
+├── docker-compose.yml          # Multi-container orchestration
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
 ## ⚙️ Technologies Used
 
-- **Python (Pandas, NumPy, Scikit-learn, XGBoost)**
-- **Flask** - Web framework for UI
-- **HTML/CSS (Jinja2 templates)** - For frontend rendering
-- **WTForms** - For form handling in Flask
-- **Jupyter Notebook** - For Data Cleaning, EDA, Feature Engineering, Model Building
-- **Joblib** - Model serialization
-- **Excel** - Raw data storage
+### Machine Learning
+
+* Scikit-learn
+* XGBoost
+* Random Forest
+* Decision Tree
+
+### MLOps
+
+* MLflow
+* DVC
+* GitHub Actions
+* Docker
+* Docker Compose
+
+### Backend
+
+* FastAPI
+* Pydantic
+* Uvicorn
+
+### Frontend
+
+* Streamlit
+
+### Cloud & Deployment
+
+* AWS EC2
+* Docker Hub
+
+### Data Processing
+
+* Pandas
+* NumPy
 
 ---
 
-## 🧩 Key Features
+## 🔬 Feature Engineering
 
-1. **Data Cleaning & Preprocessing**
-   - Handled missing values (`-99999`)
-   - Chi-Square Tests for categorical variables
-   - ANOVA & VIF for numerical variables
-   - Standardization using `StandardScaler`
-
-2. **Feature Engineering**
-   - Encoding categorical variables (Label Encoding, One-Hot Encoding)
-   - Removal of multicollinear features using VIF
-
-3. **Model Building**
-   - **Random Forest Classifier**
-   - **XGBoost Classifier (with Hyperparameter Tuning via GridSearchCV)**
-   - **Decision Tree Classifier**
-
-4. **Model Evaluation**
-   - Accuracy, Precision, Recall, F1 Score (per class)
-
-5. **Flask Web App**
-   - Predict customer risk category based on user input
-   - Clean, interactive UI designed with Flask & HTML
+* Missing value treatment
+* Chi-Square Test for categorical variables
+* ANOVA Test for numerical variables
+* Variance Inflation Factor (VIF) analysis
+* Feature selection
+* Label Encoding
+* Ordinal Encoding
 
 ---
 
-## 🚀 How to Run the Project
+## 🤖 Models Trained
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/sdntheone/Credit_Lending_Risk_Analysis.git
-   cd Credit_Lending_Risk_Analysis
-   ```
+* Decision Tree Classifier
+* Random Forest Classifier
+* XGBoost Classifier
 
-2. **Create & Activate a Virtual Environment (Optional)**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Linux/Mac
-   venv\Scripts\activate     # On Windows
-   ```
-
-3. **Install the required packages**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the Flask App**:
-   ```bash
-   python app.py
-   ```
-   Access the app at: `http://127.0.0.1:5000/`
+Hyperparameter optimization was performed using RandomizedSearchCV and tracked through MLflow experiments.
 
 ---
 
-## 📊 Sample Output (XGBoost Model)
+## 📊 Model Performance
+
+| Metric            | Value  |
+| ----------------- | ------ |
+| Accuracy          | 75.98% |
+| Weighted F1 Score | 77.08% |
+| Macro F1 Score    | 70.58% |
+
+### Class-wise Performance
+
+| Class | Precision | Recall | F1 Score |
+| ----- | --------- | ------ | -------- |
+| P1    | 0.736     | 0.813  | 0.773    |
+| P2    | 0.889     | 0.808  | 0.847    |
+| P3    | 0.403     | 0.570  | 0.472    |
+| P4    | 0.787     | 0.684  | 0.732    |
+
+---
+
+## 🚀 MLOps Features
+
+### DVC Pipeline
+
+* Data versioning
+* Pipeline orchestration
+* Reproducible experiments
+
+### MLflow
+
+* Experiment tracking
+* Model registry
+* Model versioning
+* Champion model deployment
+
+### Docker
+
+* Separate frontend and backend containers
+* Portable deployment environment
+
+### CI/CD
+
+* Automated Docker image build
+* Automated image push to Docker Hub
+* Automated deployment to AWS EC2 via GitHub Actions
+
+---
+
+## 🌐 Application Components
+
+### FastAPI Backend
+
+* Health endpoint
+* Prediction endpoint
+* Model loading from MLflow Registry
+* Real-time inference
+
+### Streamlit Frontend
+
+* User-friendly interface
+* Input validation
+* Feature descriptions
+* Real-time prediction dashboard
+
+---
+
+## 🐳 Running with Docker Compose
+
+```bash
+docker compose up -d
 ```
-Accuracy: 0.82
 
-Class P1:
-Precision: 0.85
-Recall: 0.80
-F1 Score: 0.82
-...
+Backend:
+
+```text
+http://localhost:8000
+```
+
+Frontend:
+
+```text
+http://localhost:8501
 ```
 
 ---
 
-## ✅ Results & Conclusion
+## 📈 Key Achievements
 
-- **XGBoost performed best** among all models with the highest accuracy.
-- Further model tuning or collecting more feature-rich data can improve performance.
-- The **Flask UI** enables non-technical users to interact with the model and get real-time predictions.
+* Built a complete end-to-end MLOps pipeline.
+* Automated training, evaluation, tracking, and deployment workflows.
+* Integrated MLflow Model Registry with production inference.
+* Implemented CI/CD using GitHub Actions.
+* Deployed containerized application on AWS EC2.
+* Delivered real-time multiclass credit risk prediction through FastAPI and Streamlit.
 
 ---
 
-## 🤝 Contact
-**Sudhanshu Nandan**  
-Email: *[sdntheone.com]*  
-GitHub: [https://github.com/sdntheone](https://github.com/sdntheone)
+## 👨‍💻 Author
+
+Sudhanshu Nandan
+
+Email: [sdntheone@gmail.com](mailto:sdntheone@gmail.com)
+
+GitHub: https://github.com/sdntheone
+
+LinkedIn: https://www.linkedin.com/in/sudhanshu-nandan

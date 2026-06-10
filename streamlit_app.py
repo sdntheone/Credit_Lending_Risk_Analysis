@@ -11,7 +11,8 @@ st.title("💳 Credit Lending Risk Analysis")
 st.markdown("### Customer Credit Risk Prediction System")
 st.write("Fill in the applicant credit details below to predict the approval category.")
 
-FASTAPI_URL = "http://backend:8000/predict"
+# FASTAPI_URL = "http://backend:8000/predict"
+FASTAPI_URL = "http://localhost:8000/predict"
 
 with st.container():
 

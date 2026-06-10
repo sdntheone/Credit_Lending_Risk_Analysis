@@ -3,6 +3,9 @@ import mlflow.pyfunc
 import dagshub
 import joblib
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 username = os.getenv("DAGSHUB_USERNAME")
 token = os.getenv("DAGSHUB_TOKEN")
